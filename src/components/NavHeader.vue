@@ -142,11 +142,12 @@ export default {
         this.axios.get('/products',{
           params:{
             categoryId:'100012',
-            //pageSize:6 可以取6条
+            pageSize:6 //可以取6条数据
           }
         }).then((res)=>{
           if(res.list.length>6){
-            this.phoneList=res.list.slice(0,6)
+            // this.phoneList=res.list.slice(0,6) 可以用slice
+            this.phoneList=res.list;
           }
         })
       },
@@ -249,6 +250,7 @@ export default {
               box-shadow: 0px 7px 6px 0px rgba(0,0,0,0.11);
               z-index: 10;
               transition: all .5s;
+              background-color: #ffffff;
               .product{
                 position: relative;
                 float: left;
