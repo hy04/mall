@@ -142,12 +142,12 @@ export default {
         this.axios.get('/products',{
           params:{
             categoryId:'100012',
-            pageSize:6 //可以取6条数据
+            //pageSize:6 //可以取6条数据
           }
         }).then((res)=>{
           if(res.list.length>6){
-            // this.phoneList=res.list.slice(0,6) 可以用slice
-            this.phoneList=res.list;
+            this.phoneList=res.list.slice(0,6) //可以用slice
+            //this.phoneList=res.list;
           }
         })
       },
