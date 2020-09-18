@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'//把作用域对象挂载到vue实例中，方便我们用this去调用
+import VueLazyLoad from 'vue-lazyload'
 import router from './router'
 //import env from './env'
 const mock = true;//mock开关
@@ -28,6 +29,10 @@ axios.interceptors.response.use(function(response){
 
 
 Vue.use(VueAxios,axios);
+Vue.use(VueLazyLoad,{
+  loading:'/imgs/loading-svg/loading-bars.svg'
+});
+
 Vue.config.productionTip = false
 
 new Vue({
