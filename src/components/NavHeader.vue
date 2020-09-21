@@ -13,7 +13,7 @@
           <a href="javascript:;" v-if="username">{{username}}</a>
           <a href="javascript:;" v-if="!username" @click="login">登录</a>
           <a href="javascript:;" v-if="username">我的订单</a>
-          <a href="javascript:;" class="my-cart" @click="goToCart"><span class="icon-cart"></span>购物车</a>
+          <a href="javascript:;" class="my-cart" @click="goToCart"><span class="icon-cart"></span>购物车({{cartCount}})</a>
         </div>
       </div>
     </div>
@@ -116,14 +116,24 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 export default {
     name:'nav-header',
     data(){
       return{
-        username:'',
         phoneList:[],
-
       }
+    },
+    computed:{
+      //为了保证在数据更新后立即渲染
+      // 常规方法
+      username(){
+        return this.$store.state.username;//get username from vuex
+      },
+      cartCount(){
+        return this.$store.state.cartCount;//get cartcount from vuex
+      },
+      //...mapState(['username','cartCount'])//使用mapstate
     },
     filters:{
       currency(val){
@@ -134,6 +144,7 @@ export default {
     mounted(){
       this.getProductList();
     },
+
     methods:{
       login(){
         this.$router.push('/login');

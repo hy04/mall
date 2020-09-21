@@ -36,13 +36,15 @@ export default {
   },
   methods:{
     getUser(){
-      this.axios.get('/user').then(()=>{
-        //to-do save to vuex
+      this.axios.get('/user').then((res)=>{
+        //save to vuex
+        this.$store.dispatch('saveUserName',res.username);
       })
     },
     getCartCount(){
-      this.axios.get('/carts/products/sum').then(()=>{
-        //to-do save to vuex
+      this.axios.get('/carts/products/sum').then((res)=>{
+        //save to vuex
+        this.$store.dispatch('saveCartCount',res);
       })
     }
   }
