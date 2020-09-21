@@ -31,6 +31,20 @@ export default {
   //   this.axios.get('/user/login').then((res)=>{
   //     this.res=res;
   //  });
+    this.getUser();
+    this.getCartCount();
+  },
+  methods:{
+    getUser(){
+      this.axios.get('/user').then(()=>{
+        //to-do save to vuex
+      })
+    },
+    getCartCount(){
+      this.axios.get('/carts/products/sum').then(()=>{
+        //to-do save to vuex
+      })
+    }
   }
 }
 </script>

@@ -181,6 +181,7 @@ export default {
           background-color: #FF6600;
           color: #ffffff;
           text-align: center;
+          margin-right: 0;
           .icon-cart{
             @include bgImg(16px,12px,'/imgs/icon-cart-checked.png',);
             margin-right: 4px;

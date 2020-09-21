@@ -3,9 +3,11 @@ import App from './App.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'//把作用域对象挂载到vue实例中，方便我们用this去调用
 import VueLazyLoad from 'vue-lazyload'
+import VueCookie from 'vue-cookie'
 import router from './router'
+
 //import env from './env'
-const mock = true;//mock开关
+const mock = false;//mock开关
 if(mock){
   require('./mock/api');
 }
@@ -18,17 +20,23 @@ axios.defaults.timeout=8000;
 //接口错误拦截
 axios.interceptors.response.use(function(response){
   let res=response.data;
+  let path=location.hash;//获取当前地址
   if(res.status==0){
     return res.data;
   }else if(res.status==10){
-    window.location.href='/#/login';
+    if(path!='#/index'){//除了首页，其他页面需要登陆才能查看
+      window.location.href='/#/login';
+    }
+    
   }else{
     alert(res.msg);
+    return Promise.reject(res);
   }
 });
 
 
 Vue.use(VueAxios,axios);
+Vue.use(VueCookie);
 Vue.use(VueLazyLoad,{
   loading:'/imgs/loading-svg/loading-bars.svg'
 });
