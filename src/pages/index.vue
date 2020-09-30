@@ -42,7 +42,7 @@
         </div>
         <Swiper :options="swiperOption">
           <SwiperSlide v-for="(item,index) in slideList" :key="index">
-            <a href="'/#/product/'+item.id"><img :src="item.img"></a>
+            <a :href="'/#/product/'+item.id"><img :src="item.img"></a>
           </SwiperSlide>
           <div class="swiper-pagination"  slot="pagination"></div>
           <div class="swiper-button-prev" slot="button-prev"></div>

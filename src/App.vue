@@ -36,13 +36,15 @@ export default {
   },
   methods:{
     getUser(){
-      this.axios.get('/user').then((res)=>{
+      //给res默认值，避免在res获取不到的时候报错
+      this.axios.get('/user').then((res={})=>{
         //save to vuex
         this.$store.dispatch('saveUserName',res.username);
       })
     },
     getCartCount(){
-      this.axios.get('/carts/products/sum').then((res)=>{
+      //给res默认值，避免在res获取不到的时候报错
+      this.axios.get('/carts/products/sum').then((res=0)=>{
         //save to vuex
         this.$store.dispatch('saveCartCount',res);
       })
