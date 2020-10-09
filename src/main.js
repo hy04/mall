@@ -28,7 +28,7 @@ axios.interceptors.response.use(function(response){
     if(path!='#/index'){//除了首页，其他页面需要登陆才能查看
       window.location.href='/#/login';
     }
-    
+    return Promise.reject(res);
   }else{
     alert(res.msg);
     return Promise.reject(res);
