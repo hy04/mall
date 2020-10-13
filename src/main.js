@@ -4,6 +4,8 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'//把作用域对象挂载到vue实例中，方便我们用this去调用
 import VueLazyLoad from 'vue-lazyload'
 import VueCookie from 'vue-cookie'
+import { Message } from 'element-ui'//引入element-ui
+import 'element-ui/lib/theme-chalk/index.css'//一定要引入样式，否则不生效
 import store from './store'
 import router from './router'
 
@@ -30,7 +32,7 @@ axios.interceptors.response.use(function(response){
     }
     return Promise.reject(res);
   }else{
-    alert(res.msg);
+    Message.warning(res.msg);
     return Promise.reject(res);
   }
 });
@@ -41,6 +43,7 @@ Vue.use(VueCookie);
 Vue.use(VueLazyLoad,{
   loading:'/imgs/loading-svg/loading-bars.svg'
 });
+Vue.prototype.$message = Message;//把 elementui插件扩展到vue原型中去后，就可以全局使用了
 
 Vue.config.productionTip = false
 

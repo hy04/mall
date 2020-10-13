@@ -45,7 +45,7 @@
           </div>
           <div class="total fr">
             合计：<span>{{cartTotalPrice}}</span>元
-            <a href="javascript:;" class="btn">去结算</a>
+            <a href="javascript:;" class="btn" @click="order">去结算</a>
           </div>
         </div>
       </div>
@@ -89,13 +89,13 @@
             selected = item.productSelected;//商品是否选中
         if(type == '-'){
           if(quantity == 1){
-            alert('商品至少保留一件');
+            this.$message.warning('商品至少保留一件');
             return;
           }
           quantity = --quantity;
         }else if(type == '+'){
           if(quantity > item.productStock){
-            alert('商品不能超过库存数量');
+            this.$message.warning('商品不能超过库存数量');
             return;
           }
           quantity = ++quantity;
@@ -112,6 +112,7 @@
       //删除购物车商品
       delProduct(item){
         this.axios.delete(`/carts/${item.productId}`).then((res)=>{
+          this.$message.success('删除成功');
           this.renderData(res);
         })
       },
@@ -128,6 +129,16 @@
           this.allChecked=res.selectedAll;
           this.cartTotalPrice=res.cartTotalPrice;
           this.checkedNum=this.list.filter(item=>item.productSelected).length
+      },
+      //购物车结算
+      order(){
+        //every 返回boolean
+        let isCheck = this.list.every(item=>!item.productSelected);
+        if(isCheck){
+          this.$message.warning('请选择一件商品');
+        }else{
+          this.$router.push('/order/confirm');
+        }
       }
     }
   }
