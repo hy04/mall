@@ -54,11 +54,16 @@ export default {
             username,//当key和value是一样的时候可以简写，username：username
             password
         }).then((res)=>{
-            this.$cookie.set('userId',res.id,{expires:'1M'});//使用vue-cookie 设置用户id
+            this.$cookie.set('userId',res.id,{expires:'Session'});//使用vue-cookie 设置用户id //cookie和session会话保持一致
             //保存用户名
             this.$store.dispatch('saveUserName',res.username);//常规方法
             //this.saveUserName(res.username);//变量太多可用mapActions
-            this.$router.push('/index');
+            this.$router.push({
+              name:'index',
+              params:{
+                from:'login'//使用params传参
+              }
+            });
         })
     },
     //...mapActions(['saveUserName']),//变量太多可用mapActions
