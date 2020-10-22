@@ -18,7 +18,7 @@
           <div class="item-detail" v-if="showDetail">
             <div class="item">
               <div class="detail-title">订单号：</div>
-              <div class="detail-info theme-color">{{orderNo}}</div>
+              <div class="detail-info theme-color">{{orderId}}</div>
             </div>
             <div class="item">
               <div class="detail-title">收货信息：</div>
@@ -50,19 +50,27 @@
         </div>
       </div>
     </div>
+    <scan-pay-code v-if="showPay" @close="closePayModal" :img="payImg"></scan-pay-code>
   </div>
 </template>
 <script>
+import QRCode from 'qrcode';
+import ScanPayCode from './../components/ScanPayCode'
 export default{
   name:'order-pay',
   data(){
     return {
-      orderNo:this.$route.query.orderNo,//订单号
+      orderId:this.$route.query.orderNo,//订单号
       addressInfo:'',//收货人地址
       orderDetail:[],//订单详情包含了商品列表
       showDetail:false,//显示隐藏详情列表
       payType:'',//支付类型
+      showPay:false,//是否显示微信支付弹框
+      payImg:''//微信支付二维码地址
     }
+  },
+  components:{
+    ScanPayCode
   },
   mounted(){
     this.getOrderDetail();
@@ -70,19 +78,38 @@ export default{
   methods:{
     //获取订单详情
     getOrderDetail(){
-      this.axios.get(`/orders/${this.orderNo}`).then((res)=>{
+      this.axios.get(`/orders/${this.orderId}`).then((res)=>{
         let item = res.shippingVo;
         this.addressInfo = `${item.receiverName} ${item.receiverMobile} ${item.receiverProvince} ${item.receiverCity} ${item.receiverDistrict} ${item.receiverAddress}`;
         this.orderDetail = res.orderItemVoList;
       })
     },
     paySubmit(payType){
-      if(payType == 1){
-        window.open('/#/order/alipay?orderId='+this.orderNo,'_blank');
+      if(payType == 1){//支付宝支付
+        window.open('/#/order/alipay?orderId='+this.orderId,'_blank');
+      }else{//微信支付
+          this.axios.post('/pay',{
+            orderId:this.orderId,
+            orderName:'Vue MiMall',
+            amount:0.01,
+            payType:2
+          }).then((res)=>{
+            QRCode.toDataURL(res.content).then(url=>{
+              this.showPay = true;
+              this.payImg = url;
+            }).catch(()=>{
+              this.$message.error('微信二维码生成失败，请稍后重试');
+            })
+          })
+        }
+      },
+      //关闭微信弹框
+      closePayModal(){
+        this.showPay = false;
       }
+
     }
   }
-}
 </script>
 <style lang="scss">
   .order-pay{
