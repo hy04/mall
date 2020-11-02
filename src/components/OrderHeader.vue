@@ -20,7 +20,6 @@ export default {
     name:'order-header',
     props:{
       title:String,
-
     },
     computed:{
       ...mapState(['username'])
