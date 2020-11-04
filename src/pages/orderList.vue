@@ -55,6 +55,17 @@
             @current-change="handleChange"
           >
           </el-pagination>
+          <div class="load-more" v-if="false">
+            <el-button type="primary" :loading="buttonLoading" @click="loadMore">加载更多</el-button>
+          </div>
+          <div class="scroll-more"
+            v-if="false"
+            v-infinite-scroll="scrollMore"
+            infinite-scroll-disabled="true"
+            infinite-scroll-distance="410"
+          >
+            <img src="/imgs/loading-svg/loading-spinning-bubbles.svg" alt="" v-show="loading">
+          </div>
           <no-data v-if="!loading && list.length==0"></no-data>
         </div>
       </div>
@@ -65,22 +76,30 @@
   import OrderHeader from './../components/OrderHeader';
   import Loading from './../components/Loading';
   import NoData from './../components/NoData';
-  import { Pagination } from 'element-ui';
+  import { Pagination, Button } from 'element-ui';
+  import infiniteScroll from 'vue-infinite-scroll';
   export default{
     name:'order-list',
     components:{
       OrderHeader,
       Loading,
       NoData,
-      [Pagination.name]:Pagination
+      [Pagination.name]:Pagination,
+      [Button.name]:Button
+    },
+    directives:{
+      infiniteScroll
     },
     data(){
       return {
         list:[],
-        loading:true,
         pageSize:10,
         pageNum:1,
-        total:0
+        total:0,
+        buttonLoading:false,//button 的加载
+        loading:true,//等待的加载控制
+        busy:false,//滚动加载是否触发
+        showButton:true,//是否显示加载更多按钮
       }
     },
     mounted(){
@@ -88,16 +107,24 @@
     },
     methods:{
       getOrderList(){
+        this.buttonLoading = true;
+        this.busy = true;
         this.axios.get('/orders',{
           params:{
-            pageNum:this.pageNum
+            pageNum:this.pageNum,
+            pageSize:5
           }
         }).then((res)=>{
-          this.loading = false;
+          this.loading = false;//接口返回结果后 动画关闭
+          this.buttonLoading = false;//button加载动画关闭
+          // this.list = this.list.concat(res.list);
           this.list = res.list;
           this.total = res.total;
+          this.busy = false;
+          this.showButton = res.hasNextPage;
         }).catch(()=>{
-          this.loading = false;
+          this.loading = false;//出错后动画也要关闭
+          this.buttonLoading = false;//button加载动画关闭
         })
       },
       goPay(orderNo){
@@ -116,10 +143,42 @@
           }
         })
       },
+      //第一种方法 分页器
       handleChange(pageNum){
         this.pageNum = pageNum;
         this.getOrderList();
-      }
+      },
+      //第二种方法 加载更多按钮
+      loadMore(){
+        this.pageNum++;
+        this.getOrderList();
+      },
+      //第三种方法 滚动加载 通过npm插件 实现
+      scrollMore(){
+        this.busy = true;
+        setTimeout(() => {
+          this.pageNum++;
+          this.getList();
+        }, 500);
+      },
+      //专门为scrollmore
+      getList(){
+        this.loading = true;
+        this.axios.get('/orders',{
+          params:{
+            pageNum:this.pageNum,
+            pageSize:10
+          }
+        }).then((res)=>{
+          this.list = this.list.concat(res.list);
+          this.loading = false;
+          if(res.hasNextPage){
+            this.busy = false;
+          }else{
+            this.busy = true;
+          }
+        })
+      },
     }
   }
 </script>
@@ -188,12 +247,18 @@
         .pagination{
           text-align: right;
         }
+        .load-more,.scroll-more{
+          text-align: center;
+        }
       }
     }
   }
   //最简单覆盖elementui 组件颜色的方法
   .el-pagination.is-background .el-pager li:not(.disabled).active {
     background-color: #FF6600;
-    color: #FFF;
+  }
+  .el-button--primary{
+    background-color: #FF6600;
+    border-color:#FF6600;
   }
 </style>
