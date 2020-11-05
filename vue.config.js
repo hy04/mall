@@ -12,5 +12,10 @@ module.exports = {
         }
       }
     }
+  },
+  productionSourceMap:true,
+  //删除预加载
+  chainWebpack:(config)=>{
+    config.plugins.delete('prefetch');
   }
 }
